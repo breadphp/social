@@ -1,0 +1,31 @@
+{
+	"name" : "bread/social",
+	"description" : "Bread social authentication library",
+	"type" : "library",
+	"authors" : [{
+			"name" : "Giovanni Lovato",
+			"email" : "giovanni.lovato@aldu.net"
+		}, {
+			"name" : "Alex Tomasello",
+			"email" : "alex.tomasello@gmail.com"
+		}
+	],
+	"keywords" : [
+		"bread",
+		"auth"
+	],
+	"homepage" : "https://github.com/breadphp/social",
+	"license" : "CC-BY-3.0",
+	"require" : {
+		"php" : ">=5.4",
+		"bread/configuration" : "~1.1",
+		"bread/promises" : "~1.0",
+		"facebook/php-sdk-v4" : "4.0.6",
+		"googleplus/quickstart" : "~1.0"
+	},
+	"autoload" : {
+		"psr-4" : {
+			"Bread\\Social\\" : "src"
+		}
+	}
+}
