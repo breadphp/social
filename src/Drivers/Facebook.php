@@ -37,7 +37,7 @@ class Facebook implements Driver
             $model->locale = $fbObj->getProperty('locale');
             return $deferred->resolve($model);
         } catch (FacebookRequestException $exception) {
-            return $deferred->reject($exception);
+            return $deferred->reject($exception->getMessage());
         }
     }
 }

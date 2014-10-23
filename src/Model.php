@@ -28,6 +28,8 @@ class Model
 
     protected $locale;
 
+    protected $mail;
+
     public function __set($property, $value)
     {
         $this->$property = $value;
