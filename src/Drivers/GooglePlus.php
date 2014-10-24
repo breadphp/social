@@ -33,31 +33,43 @@ class GooglePlus implements Driver
         $client->setScopes(array('https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'));
         $deferred = new Deferred();
         try {
-            if ($client->isAccessTokenExpired()) {
-                $client->authenticate($token);
-            } else {
-                $client->setAccessToken(json_encode($options));
-            }
+            $client->authenticate($token);
             $plus = new Google_Service_Oauth2($client);
             $info = $plus->userinfo->get();
-            $model = new Model();
-            $model->id = $info->id;
-            $model->name = $info->name;
-            $model->firstName = $info->givenName;
-            $model->lastName = $info->familyName;
-            $model->link = $info->link;
-            $model->mail = $info->email;
-            $model->locale = $info->locale;
             return $deferred->resolve(array(
-                'model' => $model,
+                'model' => static::createModel($info),
                 'accesToken' => $client->getAccessToken()
             ));
         } catch (Google_IO_Exception $exception) {
             return $deferred->reject($exception->getMessage());
         } catch (Google_Auth_Exception $exception) {
+            try {
+                $client->setAccessToken(json_encode($options));
+                $plus = new Google_Service_Oauth2($client);
+                $info = $plus->userinfo->get();
+                return $deferred->resolve(array(
+                    'model' => static::createModel($info),
+                    'accesToken' => $client->getAccessToken()
+                ));
+            } catch (Google_Service_Exception $exception) {
             return $deferred->reject($exception->getMessage());
+            } catch (Google_Auth_Exception $exception) {
+                return $deferred->reject($exception->getMessage());
+            }
         } catch (Google_Service_Exception $exception) {
             return $deferred->reject($exception->getMessage());
         }
+    }
+
+    protected static function createModel($info) {
+        $model = new Model();
+        $model->id = $info->id;
+        $model->name = $info->name;
+        $model->firstName = $info->givenName;
+        $model->lastName = $info->familyName;
+        $model->link = $info->link;
+        $model->mail = $info->email;
+        $model->locale = $info->locale;
+        return $model;
     }
 }
