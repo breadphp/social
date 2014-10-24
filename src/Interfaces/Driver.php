@@ -4,5 +4,5 @@ namespace Bread\Social\Interfaces;
 interface Driver
 {
 
-    public static function login($token, $class, $domain = '__default__');
+    public static function login($token, $class, $domain = '__default__', array $options = array());
 }

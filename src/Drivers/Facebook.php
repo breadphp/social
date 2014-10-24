@@ -18,7 +18,7 @@ use Facebook\FacebookRequestException;
 class Facebook implements Driver
 {
 
-    public static function login($token, $class, $domain = '__default__')
+    public static function login($token, $class, $domain = '__default__', array $options = array())
     {
         $appId = Configuration::get($class, 'facebook.app.id', $domain);
         $appSecret = Configuration::get($class, 'facebook.app.secret', $domain);

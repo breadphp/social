@@ -6,19 +6,21 @@ use Bread\Social\Model;
 use Bread\Social\Interfaces\Driver;
 use Bread\Promises\Deferred;
 use Google_Client;
-use Google_Service_Social2;
+use Google_Service_Oauth2;
 use Google_IO_Exception;
 use Google_Auth_Exception;
+use Google_Service_Exception;
 
 /**
  * https://github.com/google/google-api-php-client/tree/master/src/Google
+ *
  * @author tomaselloa
  *
  */
 class GooglePlus implements Driver
 {
 
-    public static function login($token, $class, $domain = '__default__')
+    public static function login($token, $class, $domain = '__default__', array $options = array())
     {
         $appId = Configuration::get($class, 'google.app.id', $domain);
         $appSecret = Configuration::get($class, 'google.app.secret', $domain);
@@ -29,8 +31,12 @@ class GooglePlus implements Driver
         $client->setClientSecret($appSecret);
         $deferred = new Deferred();
         try {
-            $client->authenticate($token);
-            $plus = new Google_Service_Social2($client);
+            if ($client->isAccessTokenExpired()) {
+                $client->authenticate($token);
+            } else {
+                $client->setAccessToken(json_encode($options));
+            }
+            $plus = new Google_Service_Oauth2($client);
             $info = $plus->userinfo->get();
             $model = new Model();
             $model->id = $info->id;
@@ -40,10 +46,15 @@ class GooglePlus implements Driver
             $model->link = $info->link;
             $model->mail = $info->email;
             $model->locale = $info->locale;
-            return $deferred->resolve($model);
+            return $deferred->resolve(array(
+                'model' => $model,
+                'accesToken' => $client->getAccessToken()
+            ));
         } catch (Google_IO_Exception $exception) {
             return $deferred->reject($exception->getMessage());
         } catch (Google_Auth_Exception $exception) {
+            return $deferred->reject($exception->getMessage());
+        } catch (Google_Service_Exception $exception) {
             return $deferred->reject($exception->getMessage());
         }
     }
