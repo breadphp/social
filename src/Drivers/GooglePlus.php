@@ -29,6 +29,8 @@ class GooglePlus implements Driver
         $client->setApplicationName($appName);
         $client->setClientId($appId);
         $client->setClientSecret($appSecret);
+        $client->setRedirectUri('postmessage');
+        $client->setScopes(array('https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'));
         $deferred = new Deferred();
         try {
             if ($client->isAccessTokenExpired()) {
