@@ -30,14 +30,16 @@ class GooglePlus implements Driver
         $client->setClientId($appId);
         $client->setClientSecret($appSecret);
         $client->setRedirectUri('postmessage');
-        $client->setScopes(array('https://www.googleapis.com/auth/userinfo.email','https://www.googleapis.com/auth/userinfo.profile'));
+        $client->setScopes(array(
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile'
+        ));
         $deferred = new Deferred();
         try {
             $client->authenticate($token);
             $plus = new Google_Service_Oauth2($client);
-            $info = $plus->userinfo->get();
             return $deferred->resolve(array(
-                'model' => static::createModel($info),
+                'model' => static::createModel($plus->userinfo->get()),
                 'accesToken' => $client->getAccessToken()
             ));
         } catch (Google_IO_Exception $exception) {
@@ -46,11 +48,7 @@ class GooglePlus implements Driver
             try {
                 $client->setAccessToken(json_encode($options));
                 $plus = new Google_Service_Oauth2($client);
-                $info = $plus->userinfo->get();
-                return $deferred->resolve(array(
-                    'model' => static::createModel($info),
-                    'accesToken' => $client->getAccessToken()
-                ));
+                return static::createModel($plus->userinfo->get());
             } catch (Google_Service_Exception $exception) {
             return $deferred->reject($exception->getMessage());
             } catch (Google_Auth_Exception $exception) {
