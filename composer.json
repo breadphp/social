@@ -21,7 +21,7 @@
 		"bread/configuration" : "~1.1",
 		"bread/promises" : "~1.0",
 		"facebook/php-sdk-v4" : "4.0.6",
-		"google/apiclient": "1.0.*@beta"
+		"google/apiclient" : "~1.1"
 	},
 	"autoload" : {
 		"psr-4" : {
