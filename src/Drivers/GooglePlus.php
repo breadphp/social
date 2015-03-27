@@ -38,10 +38,9 @@ class GooglePlus implements Driver
         try {
             $client->authenticate($token);
             $plus = new Google_Service_Oauth2($client);
-            return $deferred->resolve(array(
-                'model' => static::createModel($plus->userinfo->get()),
-                'accesToken' => $client->getAccessToken()
-            ));
+            $model = static::createModel($plus->userinfo->get());
+            $model->accesToken = $client->getAccessToken();
+            return $deferred->resolve($model);
         } catch (Google_IO_Exception $exception) {
             return $deferred->reject($exception->getMessage());
         } catch (Google_Auth_Exception $exception) {

@@ -30,6 +30,8 @@ class Model
 
     protected $mail;
 
+    protected $accesToken;
+
     public function __set($property, $value)
     {
         $this->$property = $value;
